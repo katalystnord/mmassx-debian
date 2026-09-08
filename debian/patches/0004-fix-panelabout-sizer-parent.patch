@@ -20,7 +20,7 @@ Description: Fix parent/sizer mismatch in the About dialog (panelAbout)
  Fix: give the inner panel its own sizer, and return an outer sizer
  that contains the panel itself (not the panel's own sizer).
 Author: David <david@katalystnord.com>
-Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/TODO
+Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/2
 Last-Update: 2026-09-08
 --- a/gui/panel_about.py
 +++ b/gui/panel_about.py
