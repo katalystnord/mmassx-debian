@@ -1,0 +1,40 @@
+Description: Fix parent/sizer mismatch in the About dialog (panelAbout)
+ Same defect as 0003, in a different dialog: panelAbout builds an inner
+ wx.Panel to hold its content, but never calls panel.SetSizer() on it;
+ instead the inner sizer itself is returned and set directly as the
+ frame's own sizer. The label/button widgets are therefore managed by
+ a sizer nested under the frame's sizer while their real parent (the
+ inner panel) is never part of that hierarchy at all.
+ .
+ wxWidgets 3.2 (as currently shipped by Debian/Ubuntu) enforces this
+ at runtime and aborts with a C++ assertion; older wxWidgets versions
+ tolerated it. This crashed on opening Help > About:
+ .
+   wx._core.wxAssertionError: C++ assertion
+   "CheckExpectedParentIs(w, m_containingWindow)" failed at
+   ./src/common/sizer.cpp(887) in SetContainingWindow(): Windows
+   managed by the sizer associated with the given window must have
+   this window as parent, otherwise they will not be repositioned
+   correctly.
+ .
+ Fix: give the inner panel its own sizer, and return an outer sizer
+ that contains the panel itself (not the panel's own sizer).
+Author: David <david@katalystnord.com>
+Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/TODO
+Last-Update: 2026-09-08
+--- a/gui/panel_about.py
++++ b/gui/panel_about.py
+@@ -101,7 +101,12 @@ class panelAbout(frame):
+         sizer.Add(cite_butt, 0, wx.CENTER|wx.LEFT|wx.RIGHT|wx.BOTTOM, 20)
+         
+         sizer.Fit(panel)
+-        return sizer
++        panel.SetSizer(sizer)
++
++        outerSizer = wx.BoxSizer(wx.VERTICAL)
++        outerSizer.Add(panel, 1, wx.EXPAND)
++
++        return outerSizer
+     # ----
+     
+     
