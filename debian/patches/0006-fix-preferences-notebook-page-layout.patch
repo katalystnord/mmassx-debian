@@ -1,0 +1,66 @@
+Description: Fix overlapping widgets in the Preferences dialog's notebook pages
+ dlgPreferences builds each notebook page's content by calling
+ mainSizer.Fit(panel) *before* panel.SetSizer(mainSizer). For a plain
+ top-level window this ordering is (surprisingly) harmless under
+ current wxWidgets, but for a panel that becomes a wx.Notebook page,
+ no further resize/layout event ever arrives to trigger the newly
+ attached sizer's layout pass, since the page was already added to
+ the notebook and sized before SetSizer() enables auto-layout on
+ resize. The result: every child widget stays at its default creation
+ position, (0, 0), rather than being stacked by the sizer.
+ .
+ Confirmed directly by instantiating the dialog and reading widget
+ positions:
+ .
+   StaticText 'mMass can use your internet connection...' (0, 0) (378, 36)
+   CheckBox 'Automatically check for updates' (0, 0) (243, 22)
+   Button 'Check Now' (0, 0) (100, 34)
+ .
+ All three sat exactly on top of each other, which is what the user
+ saw as garbled overlapping text and a misplaced button on the
+ Software Updates page.
+ .
+ Fix: call panel.SetSizer() before Fit(), and add an explicit
+ panel.Layout() call to force a layout pass regardless of event
+ timing. After the fix the same widgets report distinct, correctly
+ stacked positions ((10,10), (77,66), (149,108)). Applied to both
+ notebook pages (makeUpdatesPage and the Windows-only
+ makeCompassPanel, which has the identical structure and would hit
+ the same bug, though it could not be tested directly on Linux).
+Author: David <david@katalystnord.com>
+Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/TODO
+Last-Update: 2026-09-08
+--- a/gui/dlg_preferences.py	2026-09-08 16:07:46.923036756 +0200
++++ b/gui/dlg_preferences.py	2026-09-08 16:07:46.922401873 +0200
+@@ -88,13 +88,14 @@
+         mainSizer.Add(updateNow_butt, 0, wx.CENTER|wx.ALL, 10)
+         
+         # fit layout
+-        mainSizer.Fit(panel)
+         panel.SetSizer(mainSizer)
+-        
++        mainSizer.Fit(panel)
++        panel.Layout()
++
+         return panel
+     # ----
+-    
+-    
++
++
+     def makeCompassPanel(self):
+         """CompassXport panel."""
+         
+@@ -132,9 +133,10 @@
+         mainSizer.Add(grid, 0, wx.CENTER|wx.ALL, 10)
+         
+         # fit layout
+-        mainSizer.Fit(panel)
+         panel.SetSizer(mainSizer)
+-        
++        mainSizer.Fit(panel)
++        panel.Layout()
++
+         return panel
+     # ----
+     
