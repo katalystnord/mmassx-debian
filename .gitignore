@@ -159,8 +159,11 @@ cython_debug/
 /debian/debhelper-build-stamp
 /debian/files
 /debian/mmassx/
+/debian/mmassx-modules/
 /debian/mmassx.*.debhelper
+/debian/mmassx-modules.*.debhelper
 /debian/mmassx.substvars
+/debian/mmassx-modules.substvars
 /debian/patches/.pc/
 /mspy/build/
 /mspy/*.so
