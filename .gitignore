@@ -164,3 +164,8 @@ cython_debug/
 /debian/patches/.pc/
 /mspy/build/
 /mspy/*.so
+
+# dpkg-buildpackage always writes .deb/.changes/.buildinfo/.ddeb one
+# directory above the source tree; we move them here after each build
+# to keep them from landing loose in the parent katalystnord/ folder.
+/build/
