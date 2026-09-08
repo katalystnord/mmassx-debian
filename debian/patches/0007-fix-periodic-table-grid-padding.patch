@@ -1,0 +1,34 @@
+Description: Fix cramped periodic table layout on Linux (negative grid gap)
+ On GTK, PERIODIC_TABLE_GRID is set to (-7,-7): a *negative* gap
+ between every cell of the periodic table's GridBagSizer (element
+ buttons, the lanthanide/actinide connector line, and the selected
+ element's info text all share this one grid). This looks like a
+ leftover compensation for old GTK2 button themes that carried extra
+ internal padding; current GTK3 buttons don't have that padding, so
+ the negative gap now just crowds everything together with no
+ breathing room, most visibly between the button grid and the
+ selected element's name/mass text.
+ .
+ Confirmed by instantiating the dialog, selecting an element, and
+ reading widget positions directly: the gap between the Be button's
+ right edge and the info text's left edge was 11px before this fix
+ (104 to 133 minus button width), consistent with the user's report
+ of a cramped layout with text crowding the element boxes. Changed to
+ the same (2,2) gap the Windows/other-platform default already uses;
+ after the fix the same gap grows to 29px, and the dialog gains
+ sensible padding throughout rather than just at this one spot, since
+ the change affects the whole shared grid.
+Author: David <david@katalystnord.com>
+Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/TODO
+Last-Update: 2026-09-08
+--- a/gui/mwx.py	2026-09-08 16:18:47.048857529 +0200
++++ b/gui/mwx.py	2026-09-08 16:18:47.045416458 +0200
+@@ -175,7 +175,7 @@
+     DOCTREE_BULLETSIZE = 4
+     DOCTREE_STYLE = wx.TR_DEFAULT_STYLE|wx.TR_HAS_BUTTONS|wx.TR_HIDE_ROOT|wx.SUNKEN_BORDER
+     
+-    PERIODIC_TABLE_GRID = (-7,-7)
++    PERIODIC_TABLE_GRID = (2,2)
+     
+ 
+ 
