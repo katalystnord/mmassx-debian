@@ -16,28 +16,15 @@ Known TODOs before upload:
  * mmass.py resolves its own submodules via a path relative to the
    current working directory (`sys.path.insert(0, './mspy')`), not
    relative to the script location. debian/mmassx.wrapper works around
-   this with `cd /usr/share/mmassx` before invoking python3; if
+   this with `cd /usr/lib/mmassx` before invoking python3; if
    upstream fixes this to use `os.path.dirname(__file__)`, the wrapper
    can be simplified.
  * mspy/calculations is a mandatory C extension with no Linux build
    support upstream (only a Windows .pyd is shipped); fixed via
    debian/patches/0001-fix-linux-build-of-calculations-extension.patch
-   and compiled in override_dh_auto_build.
- * The package is split into mmassx (Architecture: all) and
-   mmassx-modules (Architecture: any), mirroring the original mmass /
-   mmass-modules split. That old package was Python 2 and used
-   `import calculations` (an implicit relative import), which let it
-   put the .py files and the .so in two entirely separate directories
-   glued together via PYTHONPATH in debian/start-script. mmassx is
-   Python 3 and uses `from . import calculations` (an explicit
-   relative import), which requires the .so to resolve inside mspy/'s
-   own package directory, no PYTHONPATH trick can satisfy that. So
-   here mmassx-modules ships the real .so under /usr/lib/mmassx/mspy/,
-   and mmassx ships a relative symlink to it from its own
-   /usr/share/mmassx/mspy/, making the package look whole to Python
-   once both are installed (guaranteed by mmassx's
-   `mmassx-modules (>= ${binary:Version})` dependency). See
-   debian/rules.
+   and compiled in override_dh_auto_build. Because of this the whole
+   app tree lives under /usr/lib/mmassx rather than /usr/share/mmassx,
+   and the package is Architecture: any, not all.
  * gui/config.py still hardcodes version = '5.5.0' even at the v6.0.1
    tag; worth reporting upstream, and worth double-checking before
    picking the packaged version number for each new release.

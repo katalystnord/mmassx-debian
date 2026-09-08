@@ -14,10 +14,10 @@ Vcs-Browser: https://github.com/katalystnord/mmassx-debian
 Rules-Requires-Root: no
 
 Package: mmassx
-Architecture: all
+Architecture: any
 Depends: ${misc:Depends},
+         ${shlibs:Depends},
          ${python3:Depends},
-         mmassx-modules (>= ${binary:Version}),
          python3-wxgtk4.0,
          python3-numpy,
          python3-pandas,
@@ -38,26 +38,7 @@ Description: mass spectrometry data viewer, processing and analysis tool
   - a compound editor and periodic table for elemental composition
     searches
  .
- This package contains the platform-independent parts of the
- software.
- .
  This package reintroduces mass spectrometry tooling that was
  previously packaged as mmass and removed from Debian in 2019 after
  upstream development had ceased; mMassX is its actively developed
- successor. Like the former mmass package, it is split into this
- platform-independent package and mmassx-modules for the compiled
- extension.
-
-Package: mmassx-modules
-Architecture: any
-Depends: ${misc:Depends},
-         ${shlibs:Depends},
-Description: mass spectrometry data viewer, processing and analysis tool - extension modules
- mMassX is an open source, multiplatform application for the analysis
- and processing of mass spectrometry data. It is a maintained fork of
- mMass, a mass spectrometry tool originally by Martin Strohalm that
- was widely used in proteomics but whose development had stalled.
- .
- This package contains the platform-dependent parts of the software:
- currently, the mspy.calculations extension used for fast signal and
- pattern calculations.
+ successor.
