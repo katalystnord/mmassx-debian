@@ -22,7 +22,7 @@ Description: Fix parent/sizer mismatch in the progress dialog (gaugePanel)
  Fix: give the inner panel its own sizer, and add the panel itself
  (not its sizer) to the outer sizer.
 Author: David <david@katalystnord.com>
-Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/TODO
+Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/2
 Last-Update: 2026-09-08
 --- a/gui/mwx.py
 +++ b/gui/mwx.py

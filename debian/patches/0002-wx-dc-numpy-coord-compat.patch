@@ -17,7 +17,7 @@ Description: Coerce numpy/float coordinates for wx.DC draw calls
      overload 1: argument 2 has unexpected type 'numpy.float64'
      overload 2: argument 2 has unexpected type 'numpy.float64'
 Author: David <david@katalystnord.com>
-Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/TODO
+Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/2
 Last-Update: 2026-09-08
 --- a/mspy/plot_canvas.py
 +++ b/mspy/plot_canvas.py

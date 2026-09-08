@@ -20,7 +20,7 @@ Description: Fix building the calculations C extension on Linux
  own machine and produced an invalid-escape-sequence warning even on
  Windows.
 Author: David <david@katalystnord.com>
-Forwarded: not-yet
+Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/2
 Last-Update: 2026-09-08
 --- a/mspy/calculations.c
 +++ b/mspy/calculations.c
