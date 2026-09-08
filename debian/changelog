@@ -1,0 +1,13 @@
+mmassx (6.0.1-1) UNRELEASED; urgency=medium
+
+  * Initial packaging, reintroducing mass spectrometry analysis
+    tooling to Debian under the mmassx name. The previous package,
+    mmass (5.5.0-5), was maintained by the Debichem Group from 2011
+    and was removed from unstable on 2019-10-18 after upstream
+    development had stalled; see the original ITP, #525675, and
+    https://tracker.debian.org/pkg/mmass for that history. mMassX is
+    the actively maintained successor upstream, targeting Python 3.
+    (TODO: file a fresh ITP against wnpp before upload and reference
+    its bug number here.)
+
+ -- David <david@katalystnord.com>  Tue, 08 Sep 2026 14:20:00 +0000

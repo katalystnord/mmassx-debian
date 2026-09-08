@@ -1,0 +1,41 @@
+Source: mmassx
+Section: science
+Priority: optional
+Maintainer: David <david@katalystnord.com>
+Build-Depends: debhelper-compat (= 13),
+               dh-python,
+               python3
+Standards-Version: 4.6.2
+Homepage: https://github.com/SCIENCE-OPEN/mmassx
+Vcs-Git: https://github.com/katalystnord/mmassx-debian.git
+Vcs-Browser: https://github.com/katalystnord/mmassx-debian
+Rules-Requires-Root: no
+
+Package: mmassx
+Architecture: all
+Depends: ${misc:Depends},
+         ${python3:Depends},
+         python3-wxgtk4.0,
+         python3-numpy,
+         python3-pandas,
+Recommends: python3-joblib,
+            python3-distro,
+Description: mass spectrometry data viewer, processing and analysis tool
+ mMassX is an open source, multiplatform application for the analysis
+ and processing of mass spectrometry data. It is a maintained fork of
+ mMass, a mass spectrometry tool originally by Martin Strohalm that
+ was widely used in proteomics but whose development had stalled.
+ .
+ Features include:
+  - viewing and annotating mass spectra from common raw/exported
+    formats (mzXML, mzData, mzML, MGF and plain text)
+  - peak picking, deisotoping and de-noising
+  - mass calibration and mass defect plotting
+  - peptide/protein mass fingerprinting and fragment ion search
+  - a compound editor and periodic table for elemental composition
+    searches
+ .
+ This package reintroduces mass spectrometry tooling that was
+ previously packaged as mmass and removed from Debian in 2019 after
+ upstream development had ceased; mMassX is its actively developed
+ successor.

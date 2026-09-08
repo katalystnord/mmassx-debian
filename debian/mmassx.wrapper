@@ -1,0 +1,6 @@
+#!/bin/sh
+# mmass.py locates its own submodules with sys.path entries relative to the
+# current working directory, so it must be run from its install directory.
+set -e
+cd /usr/share/mmassx
+exec python3 mmass.py "$@"

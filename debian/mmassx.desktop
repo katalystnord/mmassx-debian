@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=mMassX
+GenericName=Mass Spectrometry Data Viewer
+Comment=View, process and analyze mass spectrometry data
+Exec=mmassx %f
+Icon=mmassx
+Terminal=false
+Type=Application
+Categories=Science;Chemistry;Education;
+MimeType=text/x-mmass-msd;

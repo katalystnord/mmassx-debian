@@ -1,0 +1,29 @@
+Packaging notes for mmassx
+==========================
+
+This reintroduces mass spectrometry tooling to Debian, previously
+packaged as "mmass" (removed from unstable 2019-10-18, ITP was #525675).
+Upstream is now https://github.com/SCIENCE-OPEN/mmassx, an actively
+maintained Python 3 fork.
+
+Known TODOs before upload:
+
+ * File a fresh ITP against wnpp (the old bug is closed) and reference
+   it in debian/changelog.
+ * Verify exact Debian package names/versions for wxPython 4.1 bindings
+   (python3-wxgtk4.0 is a guess based on the current Debian archive;
+   confirm against the mmassx environment.yml pins).
+ * mmass.py resolves its own submodules via a path relative to the
+   current working directory (`sys.path.insert(0, './mspy')`), not
+   relative to the script location. debian/mmassx.wrapper works around
+   this with `cd /usr/share/mmassx` before invoking python3; if
+   upstream fixes this to use `os.path.dirname(__file__)`, the wrapper
+   can be simplified.
+ * gui/config.py still hardcodes version = '5.5.0' even at the v6.0.1
+   tag; worth reporting upstream, and worth double-checking before
+   picking the packaged version number for each new release.
+ * No automated test suite upstream; dh_auto_test is a no-op.
+ * Get this reviewed by the Debichem team (debichem-devel@alioth-lists.debian.net)
+   before targeting an actual Debian upload; team maintenance under
+   https://salsa.debian.org/debichem-team/ is the eventual home for
+   this if they agree to take it on.
