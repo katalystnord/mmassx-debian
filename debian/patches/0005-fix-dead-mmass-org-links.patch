@@ -1,0 +1,141 @@
+Description: Point dead mmass.org links at the mmassx GitHub repo instead
+ mmass.org is now a parked domain (it resolves to a Czech hosting
+ provider's "this domain is for sale" page), so every user-facing link
+ in the app that pointed there was dead: the About dialog's Homepage
+ and How to Cite buttons, the equivalent Help menu items, the What's
+ New/Download links checked after an update, and the crash dialog's
+ instruction to email support@mmass.org for bug reports.
+ .
+ Repoints Homepage, Cite, Download and WhatsNew at the mmassx GitHub
+ repo (WhatsNew specifically at changelog.md, since there's no
+ separate "what's new" page); repoints Forum at the GitHub issues
+ tracker, since there's no mmassx forum; repoints the crash dialog's
+ bug-report instruction at GitHub issues too.
+ .
+ Drops the Donate button/menu item/link entirely (About dialog, Help
+ menu, config.py's links dict and its two persistence exclusion
+ lists) since mmassx has no donation mechanism to point it at.
+ .
+ Also updates the shipped default configs/config.xml, since its
+ mMassWhatsNew value was not in config.py's persistence exclusion
+ list and would otherwise silently override the fixed default on
+ load; adds mMassWhatsNew to that exclusion list too, alongside the
+ other mMass* links, so this can't recur (found the hard way: a
+ config.xml a user's already run mmassx against once will have
+ cached the old dead value, permanently shadowing any future fix
+ unless mMassWhatsNew is excluded from persistence like its
+ siblings).
+Author: David <david@katalystnord.com>
+Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/TODO
+Last-Update: 2026-09-08
+--- a/configs/config.xml
++++ b/configs/config.xml
+@@ -450,7 +450,7 @@
+   </prospector>
+ 
+   <links>
+-    <link name="mMassWhatsNew" value="http://www.mmass.org/download/history.php" />
++    <link name="mMassWhatsNew" value="https://github.com/SCIENCE-OPEN/mmassx/blob/master/changelog.md" />
+     <link name="biomedmstools" value="http://ms.biomed.cas.cz/MSTools/" />
+     <link name="blast" value="http://www.ebi.ac.uk/Tools/blastall/" />
+     <link name="clustalw" value="http://www.ebi.ac.uk/Tools/clustalw/" />
+--- a/gui/config.py
++++ b/gui/config.py
+@@ -572,13 +572,12 @@ prospector={
+ }
+ 
+ links={
+-    'mMassHomepage': 'http://www.mmass.org/',
+-    'mMassForum': 'http://forum.mmass.org/',
++    'mMassHomepage': 'https://github.com/SCIENCE-OPEN/mmassx',
++    'mMassForum': 'https://github.com/SCIENCE-OPEN/mmassx/issues',
+     'mMassTwitter':  'http://www.twitter.com/mmassorg/',
+-    'mMassCite': 'http://www.mmass.org/donate/papers.php',
+-    'mMassDonate': 'http://www.mmass.org/donate/',
+-    'mMassDownload': 'http://www.mmass.org/download/',
+-    'mMassWhatsNew': 'http://www.mmass.org/download/history.php',
++    'mMassCite': 'https://github.com/SCIENCE-OPEN/mmassx',
++    'mMassDownload': 'https://github.com/SCIENCE-OPEN/mmassx/releases',
++    'mMassWhatsNew': 'https://github.com/SCIENCE-OPEN/mmassx/blob/master/changelog.md',
+     
+     'biomedmstools': 'http://ms.biomed.cas.cz/MSTools/',
+     'blast': 'http://www.ebi.ac.uk/Tools/blastall/',
+@@ -874,7 +873,7 @@ def loadConfig(path=os.path.join(confdir, 'config.xml')):
+         for linkTag in linkTags:
+             name = linkTag.getAttribute('name')
+             value = linkTag.getAttribute('value')
+-            if name not in ('mMassHomepage', 'mMassForum', 'mMassTwitter', 'mMassCite', 'mMassDonate', 'mMassDownload'):
++            if name not in ('mMassHomepage', 'mMassForum', 'mMassTwitter', 'mMassCite', 'mMassDownload', 'mMassWhatsNew'):
+                 links[name] = value
+ # ----
+ 
+@@ -1333,7 +1332,7 @@ def saveConfig(path=os.path.join(confdir, 'config.xml')):
+     # links
+     buff += '  <links>\n'
+     for name in links:
+-        if name not in ('mMassHomepage', 'mMassForum', 'mMassTwitter', 'mMassCite', 'mMassDonate', 'mMassDownload'):
++        if name not in ('mMassHomepage', 'mMassForum', 'mMassTwitter', 'mMassCite', 'mMassDownload', 'mMassWhatsNew'):
+             buff += '    <link name="%s" value="%s" />\n' % (_escape(name), _escape(links[name]))
+     buff += '  </links>\n\n'
+     
+--- a/gui/dlg_error.py
++++ b/gui/dlg_error.py
+@@ -81,7 +81,7 @@ class dlgError(wx.Dialog):
+         self.exception_value = wx.TextCtrl(self, -1, self.exception, size=(400,250), style=wx.TE_MULTILINE)
+         self.exception_value.SetFont(wx.SMALL_FONT)
+         
+-        message_label = wx.StaticText(self, -1, "Uups, another one...\nUnfortunately, you have probably found another bug in mMass.\nPlease send me this error report to support@mmass.org and I will try to fix it.\nI apologize for any inconvenience due to this bug.\nI strongly recommend to restart mMass now.")
++        message_label = wx.StaticText(self, -1, "Uups, another one...\nUnfortunately, you have probably found another bug in mMass.\nPlease report this error at https://github.com/SCIENCE-OPEN/mmassx/issues\nI apologize for any inconvenience due to this bug.\nI strongly recommend to restart mMass now.")
+         message_label.SetFont(wx.SMALL_FONT)
+         
+         icon = wx.StaticBitmap(self, -1, images.lib['iconError'])
+--- a/gui/main_frame.py
++++ b/gui/main_frame.py
+@@ -620,7 +620,6 @@ class mainFrame(wx.Frame):
+         help.Append(ID_helpTwitter, "Twitter Account...", "")
+         help.AppendSeparator()
+         help.Append(ID_helpCite, "Papers to Cite...", "")
+-        help.Append(ID_helpDonate, "Make a Donation...", "")
+         help.AppendSeparator()
+         help.Append(ID_helpUpdate, "Check for Update", "")
+         if wx.Platform != '__WXMAC__':
+@@ -632,7 +631,6 @@ class mainFrame(wx.Frame):
+         self.Bind(wx.EVT_MENU, self.onLibraryLink, id=ID_helpForum)
+         self.Bind(wx.EVT_MENU, self.onLibraryLink, id=ID_helpTwitter)
+         self.Bind(wx.EVT_MENU, self.onLibraryLink, id=ID_helpCite)
+-        self.Bind(wx.EVT_MENU, self.onLibraryLink, id=ID_helpDonate)
+         self.Bind(wx.EVT_MENU, self.onHelpUpdate, id=ID_helpUpdate)
+         self.Bind(wx.EVT_MENU, self.onHelpAbout, id=ID_helpAbout)
+         
+@@ -3251,7 +3249,6 @@ class mainFrame(wx.Frame):
+             ID_helpForum: 'mMassForum',
+             ID_helpTwitter: 'mMassTwitter',
+             ID_helpCite: 'mMassCite',
+-            ID_helpDonate: 'mMassDonate',
+             ID_linksBiomedMSTools: 'biomedmstools',
+             ID_linksBLAST: 'blast',
+             ID_linksClustalW: 'clustalw',
+
+--- a/gui/panel_about.py	2026-09-08 15:48:29.001032289 +0200
++++ b/gui/panel_about.py	2026-09-08 15:48:01.476670575 +0200
+@@ -78,10 +78,7 @@
+         
+         homepage_butt = wx.Button(panel, ID_helpHomepage, "Homepage", size=(150, -1))
+         homepage_butt.Bind(wx.EVT_BUTTON, self.parent.onLibraryLink)
+-        
+-        donate_butt = wx.Button(panel, ID_helpDonate, "Make a Donation", size=(150, -1))
+-        donate_butt.Bind(wx.EVT_BUTTON, self.parent.onLibraryLink)
+-        
++
+         cite_butt = wx.Button(panel, ID_helpCite, "How to Cite", size=(150, -1))
+         cite_butt.Bind(wx.EVT_BUTTON, self.parent.onLibraryLink)
+         
+@@ -96,8 +93,6 @@
+         sizer.AddSpacer(20)
+         sizer.Add(homepage_butt, 0, wx.CENTER|wx.LEFT|wx.RIGHT, 20)
+         sizer.AddSpacer(10)
+-        sizer.Add(donate_butt, 0, wx.CENTER|wx.LEFT|wx.RIGHT, 20)
+-        sizer.AddSpacer(10)
+         sizer.Add(cite_butt, 0, wx.CENTER|wx.LEFT|wx.RIGHT|wx.BOTTOM, 20)
+         
+         sizer.Fit(panel)
