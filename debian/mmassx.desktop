@@ -4,6 +4,7 @@ GenericName=Mass Spectrometry Data Viewer
 Comment=View, process and analyze mass spectrometry data
 Exec=mmassx %f
 Icon=mmassx
+StartupWMClass=mmassx
 Terminal=false
 Type=Application
 Categories=Science;Chemistry;Education;
