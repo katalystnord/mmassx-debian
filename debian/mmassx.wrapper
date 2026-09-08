@@ -1,20 +1,6 @@
-#!/bin/bash
-# `exec -a` (used below to fix the window icon) is a bash extension;
-# Debian's default /bin/sh is dash, which doesn't support it at all
-# ("exec: -a: not found"), so this needs bash explicitly. bash is an
-# Essential package, always present, no extra Depends needed.
-#
+#!/bin/sh
 # mmass.py locates its own submodules with sys.path entries relative to the
 # current working directory, so it must be run from its install directory.
 set -e
 cd /usr/lib/mmassx
-# Plain `python3 mmass.py` makes the process's own argv[0] (and thus the
-# WM_CLASS/app-id GTK reports to the window manager) "python3", not
-# "mmassx" -- unrelated to the launcher icon, which the desktop
-# environment reads straight from mmassx.desktop's Icon= key regardless.
-# That mismatch is why the app-grid/launcher icon is correct but the
-# running window's own icon (title bar, taskbar, alt-tab) isn't: nothing
-# ties that window back to this package's desktop entry. `exec -a`
-# overrides argv[0] for the exec'd process without touching which binary
-# actually runs, so GTK reports "mmassx" instead.
-exec -a mmassx python3 mmass.py "$@"
+exec python3 mmass.py "$@"

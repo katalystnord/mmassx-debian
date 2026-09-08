@@ -1,0 +1,56 @@
+Description: Fix generic icon shown for the running window in docks/taskbars
+ The app-grid/launcher icon was already correct (desktop environments
+ read that straight from mmassx.desktop's Icon= key), but the actual
+ running window showed a generic icon in the dock/taskbar, with a
+ tooltip literally reading "mmass.py" instead of "mMassX".
+ .
+ SetIcons() (called just above) only attaches icon pixel data to the
+ window itself; it has no bearing on what identifies that window to a
+ taskbar or dock. On GTK that's GLib's "prgname", and wx.App()
+ unconditionally sets it to the running script's own filename,
+ "mmass.py", overriding anything set beforehand (confirmed directly:
+ a shell-level `exec -a` argv[0] override took effect at the process
+ level but had zero effect here, since wx.App() overwrites prgname
+ internally regardless of the process's real argv[0]).
+ .
+ Fix: explicitly re-set prgname after SetIcons(), which runs after
+ wx.App() has already done its own (unwanted) assignment, confirmed
+ directly:
+ .
+   prgname after wx.App():     b'-'
+   prgname after mainFrame():  b'mmassx'
+ .
+ Uses ctypes against libgtk-3.so.0 directly rather than adding a
+ PyGObject/gi dependency, since GTK is already a transitive runtime
+ dependency of wxPython on Linux. Gated to __WXGTK__ and wrapped in a
+ broad try/except since this is cosmetic (a wrong taskbar icon), not
+ something that should ever be allowed to crash startup on some other
+ GTK version or platform quirk.
+Author: David <david@katalystnord.com>
+Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/TODO
+Last-Update: 2026-09-08
+--- a/gui/main_frame.py	2026-09-08 16:50:48.730005527 +0200
++++ b/gui/main_frame.py	2026-09-08 16:49:50.887170105 +0200
+@@ -103,6 +103,22 @@
+         icons.AddIcon(images.lib['icon128'])
+         icons.AddIcon(images.lib['icon256'])
+         self.SetIcons(icons)
++
++        # SetIcons above only attaches icon pixel data to this window; it
++        # has no effect on what identifies the window to a taskbar/dock,
++        # which on GTK is GLib's "prgname". wx.App() unconditionally sets
++        # that to the running script's own filename ("mmass.py"), so
++        # without this override every desktop environment's dock shows a
++        # generic icon and a "mmass.py" tooltip instead of matching this
++        # app to its .desktop entry.
++        if wx.Platform == '__WXGTK__':
++            try:
++                import ctypes
++                libgtk = ctypes.CDLL('libgtk-3.so.0')
++                libgtk.g_set_prgname.argtypes = [ctypes.c_char_p]
++                libgtk.g_set_prgname(b'mmassx')
++            except Exception:
++                pass
+         
+         # init basics
+         self.documents = []
