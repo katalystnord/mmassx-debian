@@ -153,3 +153,14 @@ cython_debug/
 #.idea/
 
 .mmass_env
+
+# dpkg-buildpackage output, not source
+/debian/.debhelper/
+/debian/debhelper-build-stamp
+/debian/files
+/debian/mmassx/
+/debian/mmassx.*.debhelper
+/debian/mmassx.substvars
+/debian/patches/.pc/
+/mspy/build/
+/mspy/*.so

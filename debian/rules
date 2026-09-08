@@ -4,18 +4,34 @@ PACKAGE = mmassx
 PKGDIR = debian/$(PACKAGE)
 
 %:
-	dh $@ --with python3
+	dh $@ --with python3 --buildsystem=none
 
-# Pure Python application shipped as-is; nothing to compile.
+# The top-level setup.py only has Windows/macOS (py2exe/py2app)
+# branches; force buildsystem=none above so dh doesn't try to
+# auto-detect it as a python_distutils build. mspy/calculations is a
+# mandatory C extension with no fallback (see debian/patches), and
+# that does need building.
 override_dh_auto_build:
+	cd mspy && python3 setup.py build_ext --inplace
+	rm -rf mspy/build
 
 override_dh_auto_test:
 
+override_dh_auto_clean:
+	rm -rf debian/mmassx mspy/build mspy/*.so mspy/__pycache__
+
 override_dh_auto_install:
-	dh_installdirs usr/share/$(PACKAGE) usr/bin usr/share/applications usr/share/icons/hicolor/16x16/apps usr/share/icons/hicolor/32x32/apps usr/share/icons/hicolor/48x48/apps usr/share/icons/hicolor/128x128/apps usr/share/icons/hicolor/256x256/apps
-	cp -a mmass.py mspy gui configs $(PKGDIR)/usr/share/$(PACKAGE)/
-	cp readme.md changelog.md license.txt $(PKGDIR)/usr/share/$(PACKAGE)/
-	rm -rf $(PKGDIR)/usr/share/$(PACKAGE)/gui/images/msw $(PKGDIR)/usr/share/$(PACKAGE)/gui/images/mac
+	dh_installdirs usr/lib/$(PACKAGE) usr/bin usr/share/applications usr/share/icons/hicolor/16x16/apps usr/share/icons/hicolor/32x32/apps usr/share/icons/hicolor/48x48/apps usr/share/icons/hicolor/128x128/apps usr/share/icons/hicolor/256x256/apps
+	cp -a mmass.py mspy gui configs $(PKGDIR)/usr/lib/$(PACKAGE)/
+	cp readme.md changelog.md license.txt $(PKGDIR)/usr/lib/$(PACKAGE)/
+	rm -rf $(PKGDIR)/usr/lib/$(PACKAGE)/gui/images/msw $(PKGDIR)/usr/lib/$(PACKAGE)/gui/images/mac
+	# Upstream's git repo carries the executable bit on plain data and
+	# .py files (they're imported, never run directly); strip it so
+	# these ship as regular files. mspy/calculations*.so is the one
+	# file that legitimately needs to stay executable/arch-specific,
+	# which is exactly why this whole tree lives under /usr/lib, not
+	# /usr/share (lintian: arch-dependent-file-in-usr-share).
+	find $(PKGDIR)/usr/lib/$(PACKAGE) -type f -not -name "calculations*.so" -exec chmod 644 {} +
 	install -m 755 debian/mmassx.wrapper $(PKGDIR)/usr/bin/mmassx
 	install -m 644 debian/mmassx.desktop $(PKGDIR)/usr/share/applications/mmassx.desktop
 	install -m 644 gui/images/gtk/icon_16.png $(PKGDIR)/usr/share/icons/hicolor/16x16/apps/mmassx.png

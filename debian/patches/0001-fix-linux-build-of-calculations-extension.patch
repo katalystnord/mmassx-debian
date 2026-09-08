@@ -1,0 +1,61 @@
+Description: Fix building the calculations C extension on Linux
+ mspy/calculations is a mandatory C extension (mod_signal, mod_pattern,
+ mod_formulator and plot_objects all import it directly with no
+ fallback); upstream only ships a prebuilt Windows .pyd and the build
+ script itself only works on Windows/Mac.
+ .
+ Two independent problems, both fixed here:
+ .
+ 1. numpy 2.x reorganized its C headers. calculations.c does
+    `#include "arrayobject.h"` (needs numpy's include/numpy directory
+    itself on the include path) but arrayobject.h then does
+    `#include "numpy/ndarrayobject.h"` (needs the parent of that
+    directory on the path too). Upstream's setup.py only added the
+    first, so nested numpy headers failed to resolve. Add both.
+ 2. PyArray_DOUBLE was fully removed from the numpy 2.x C API (it was
+    a pre-1.7 alias); replace with its current name, NPY_DOUBLE.
+ .
+ Also drops a hardcoded personal Windows include path
+ (C:\Xilinx\Vivado\...) that was never applicable outside upstream's
+ own machine and produced an invalid-escape-sequence warning even on
+ Windows.
+Author: David <david@katalystnord.com>
+Forwarded: not-yet
+Last-Update: 2026-09-08
+--- a/mspy/calculations.c
++++ b/mspy/calculations.c
+@@ -1676,7 +1676,7 @@ PyArrayObject *array_md2py( m_arrayd *p_inarr )
+     dim[1] = (npy_intp) p_inarr->cell;
+     
+     // make python array
+-    p_outarr = (PyArrayObject *) PyArray_SimpleNew(nd, dim, PyArray_DOUBLE);
++    p_outarr = (PyArrayObject *) PyArray_SimpleNew(nd, dim, NPY_DOUBLE);
+     if ( p_outarr == NULL ) {
+         return NULL;
+     }
+--- a/mspy/setup.py
++++ b/mspy/setup.py
+@@ -16,9 +16,12 @@ from setuptools import setup, Extension
+ 
+ 
+ # make include paths
+-numpyInclude = numpy.get_include() + '/numpy'
++# calculations.c does `#include "arrayobject.h"` (needs the numpy/
++# subdir itself on the path) but arrayobject.h then does
++# `#include "numpy/ndarrayobject.h"` etc. (needs the parent of that
++# subdir on the path too), so both must be included.
++numpyInclude = numpy.get_include()
+ pythonInclude = sys.prefix + '/include'
+-gyInclude = 'C:\Xilinx\Vivado\2019.1\msys64\mingw64\lib\gcc\x86_64-w64-mingw32\6.2.0\include'
+ 
+ # make setup
+ setup(
+@@ -29,7 +32,7 @@ setup(
+     description = "Fast calculations for mspy.",
+     ext_modules=[
+         Extension('calculations', ['calculations.c'],
+-            include_dirs=[numpyInclude, pythonInclude, gyInclude]
++            include_dirs=[numpyInclude, numpyInclude + '/numpy', pythonInclude]
+             # ,libraries=['m']
+         )
+     ],

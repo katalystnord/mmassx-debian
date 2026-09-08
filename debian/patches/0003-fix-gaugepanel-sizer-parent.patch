@@ -1,0 +1,43 @@
+Description: Fix parent/sizer mismatch in the progress dialog (gaugePanel)
+ gaugePanel builds an inner wx.Panel to hold the label and gauge, but
+ never calls panel.SetSizer() on it; instead the inner sizer itself is
+ added directly to the dialog's outer sizer. The label and gauge
+ widgets are therefore managed by a sizer nested under the dialog's
+ sizer while their real parent (the inner panel) is never part of that
+ hierarchy at all.
+ .
+ wxWidgets 3.2 (as currently shipped by Debian/Ubuntu) enforces this at
+ runtime and aborts with a C++ assertion; older wxWidgets versions
+ tolerated it. gaugePanel is mMassX's shared progress dialog, used for
+ every long-running operation (opening a file, exporting, processing),
+ so this crashed on the very first file open:
+ .
+   wx._core.wxAssertionError: C++ assertion
+   "CheckExpectedParentIs(w, m_containingWindow)" failed at
+   ./src/common/sizer.cpp(887) in SetContainingWindow(): Windows
+   managed by the sizer associated with the given window must have
+   this window as parent, otherwise they will not be repositioned
+   correctly.
+ .
+ Fix: give the inner panel its own sizer, and add the panel itself
+ (not its sizer) to the outer sizer.
+Author: David <david@katalystnord.com>
+Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/TODO
+Last-Update: 2026-09-08
+--- a/gui/mwx.py
++++ b/gui/mwx.py
+@@ -714,10 +714,11 @@ class gaugePanel(wx.Dialog):
+         sizer = wx.BoxSizer(wx.VERTICAL)
+         sizer.Add(self.label, 0, wx.BOTTOM, 5)
+         sizer.Add(self.gauge, 0, wx.EXPAND, 0)
+-        
++        panel.SetSizer(sizer)
++
+         mainSizer = wx.BoxSizer(wx.VERTICAL)
+-        mainSizer.Add(sizer, 0, wx.ALL, PANEL_SPACE_MAIN)
+-        
++        mainSizer.Add(panel, 0, wx.ALL, PANEL_SPACE_MAIN)
++
+         self.Layout()
+         mainSizer.Fit(self)
+         self.SetSizer(mainSizer)

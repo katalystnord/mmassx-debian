@@ -16,9 +16,15 @@ Known TODOs before upload:
  * mmass.py resolves its own submodules via a path relative to the
    current working directory (`sys.path.insert(0, './mspy')`), not
    relative to the script location. debian/mmassx.wrapper works around
-   this with `cd /usr/share/mmassx` before invoking python3; if
+   this with `cd /usr/lib/mmassx` before invoking python3; if
    upstream fixes this to use `os.path.dirname(__file__)`, the wrapper
    can be simplified.
+ * mspy/calculations is a mandatory C extension with no Linux build
+   support upstream (only a Windows .pyd is shipped); fixed via
+   debian/patches/0001-fix-linux-build-of-calculations-extension.patch
+   and compiled in override_dh_auto_build. Because of this the whole
+   app tree lives under /usr/lib/mmassx rather than /usr/share/mmassx,
+   and the package is Architecture: any, not all.
  * gui/config.py still hardcodes version = '5.5.0' even at the v6.0.1
    tag; worth reporting upstream, and worth double-checking before
    picking the packaged version number for each new release.
