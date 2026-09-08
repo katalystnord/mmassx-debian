@@ -6,10 +6,14 @@ packaged as "mmass" (removed from unstable 2019-10-18, ITP was #525675).
 Upstream is now https://github.com/SCIENCE-OPEN/mmassx, an actively
 maintained Python 3 fork.
 
+Status: ITP filed and acknowledged as Bug#1147163; Debichem team
+notified at debichem-devel@alioth-lists.debian.net (2026-09-08),
+maintainer of the mmassx fork upstream (ldrahnik) has also acknowledged
+the upstream PR (https://github.com/SCIENCE-OPEN/mmassx/pull/2) with
+the compatibility fixes below.
+
 Known TODOs before upload:
 
- * File a fresh ITP against wnpp (the old bug is closed) and reference
-   it in debian/changelog.
  * Verify exact Debian package names/versions for wxPython 4.1 bindings
    (python3-wxgtk4.0 is a guess based on the current Debian archive;
    confirm against the mmassx environment.yml pins).
@@ -29,7 +33,6 @@ Known TODOs before upload:
    tag; worth reporting upstream, and worth double-checking before
    picking the packaged version number for each new release.
  * No automated test suite upstream; dh_auto_test is a no-op.
- * Get this reviewed by the Debichem team (debichem-devel@alioth-lists.debian.net)
-   before targeting an actual Debian upload; team maintenance under
-   https://salsa.debian.org/debichem-team/ is the eventual home for
-   this if they agree to take it on.
+ * Awaiting Debichem team review before targeting an actual Debian
+   upload; team maintenance under https://salsa.debian.org/debichem-team/
+   is the eventual home for this if they agree to take it on.

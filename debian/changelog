@@ -7,7 +7,6 @@ mmassx (6.0.1-1) UNRELEASED; urgency=medium
     development had stalled; see the original ITP, #525675, and
     https://tracker.debian.org/pkg/mmass for that history. mMassX is
     the actively maintained successor upstream, targeting Python 3.
-    (TODO: file a fresh ITP against wnpp before upload and reference
-    its bug number here.)
+    (Closes: #1147163)
 
  -- David <david@katalystnord.com>  Tue, 08 Sep 2026 14:20:00 +0000
