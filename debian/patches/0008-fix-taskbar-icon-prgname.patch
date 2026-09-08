@@ -27,7 +27,7 @@ Description: Fix generic icon shown for the running window in docks/taskbars
  something that should ever be allowed to crash startup on some other
  GTK version or platform quirk.
 Author: David <david@katalystnord.com>
-Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/TODO
+Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/2
 Last-Update: 2026-09-08
 --- a/gui/main_frame.py	2026-09-08 16:50:48.730005527 +0200
 +++ b/gui/main_frame.py	2026-09-08 16:49:50.887170105 +0200
