@@ -19,7 +19,7 @@ Description: Fix cramped periodic table layout on Linux (negative grid gap)
  sensible padding throughout rather than just at this one spot, since
  the change affects the whole shared grid.
 Author: David <david@katalystnord.com>
-Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/TODO
+Forwarded: https://github.com/SCIENCE-OPEN/mmassx/pull/2
 Last-Update: 2026-09-08
 --- a/gui/mwx.py	2026-09-08 16:18:47.048857529 +0200
 +++ b/gui/mwx.py	2026-09-08 16:18:47.045416458 +0200
